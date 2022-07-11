@@ -15,7 +15,7 @@ public class LinkController {
     public LinkController(ILinkService linkService) {
         this.linkService = linkService;
     }
-    @GetMapping("/all")
+    @GetMapping("/")
     public ApiResponse getLinks() {
         return new ApiResponse(HttpStatus.OK, true, "Links fetched", linkService.getAllLinks());
     }
