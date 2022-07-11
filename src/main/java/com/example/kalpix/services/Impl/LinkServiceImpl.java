@@ -1,14 +1,17 @@
 package com.example.kalpix.services.Impl;
 
-import com.example.kalpix.models.Link;
+import  com.example.kalpix.models.Link;
 import com.example.kalpix.models.Website;
 import com.example.kalpix.repositories.ILinkRepository;
 import com.example.kalpix.services.ILinkService;
 import com.example.kalpix.services.IWebsiteService;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Scanner;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,14 +32,32 @@ public class LinkServiceImpl implements ILinkService {
     @Override
     public List<Link> saveLink(String webpage) throws IOException {
         long startTime = System.currentTimeMillis();
-        URL url = new URL(webpage);
-        String host = url.getHost();
+        System.out.println(webpage);
+        URL obj = new URL("https://www.geeksforgeeks.org/");
+
+        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+        //Sending the request
+        conn.setRequestMethod("GET");
+        int response = conn.getResponseCode();
+        if (response == 200) {
+            //Reading the response to a StringBuffer
+            Scanner responseReader = new Scanner(conn.getInputStream());
+            StringBuffer buffer = new StringBuffer();
+            while (responseReader.hasNextLine()) {
+                buffer.append(responseReader.nextLine()+"\n");
+            }
+            responseReader.close();
+            //Printing the Response
+            System.out.println(buffer.toString());
+
+
+        String host = obj.getHost();
         String domain =  host.startsWith("www.") ? host.substring(4) : host;
-        File homePagePath = new File(url.getPath());
+        File homePagePath = new File(obj.getPath());
         String fileName = homePagePath.getName();
 
         BufferedReader readr =
-                new BufferedReader(new InputStreamReader(url.openStream()));
+                new BufferedReader(new InputStreamReader(obj.openStream()));
         File folderName = new File(domain);
         if (!folderName.exists()){
             folderName.mkdirs();
@@ -65,7 +86,7 @@ public class LinkServiceImpl implements ILinkService {
 
         Website website = websiteService.saveWebsite(domain, startTime, endTime, totalElapsedTime, totalDownloadedKiloBytes);
 
-        Document doc = Jsoup.connect(webpage).get();
+        Document doc = Jsoup.connect("https://www.geeksforgeeks.org/").get();
 
         Elements links = doc.select("a[href]");
 
@@ -77,7 +98,10 @@ public class LinkServiceImpl implements ILinkService {
             newLink.setTotalElapsedTime(website.getTotalElapsed());
             linkRepository.save(newLink);
         }
+
         return linkRepository.findAllByWebsite(website);
+        }
+        return null;
     }
 
     @Override

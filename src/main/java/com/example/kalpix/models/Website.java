@@ -26,6 +26,10 @@ public class Website {
     private long totalElapsed;
     @Column(name = "total_downloaded_kilobytes")
     private long totalDownloadedKiloBytes;
+
     @OneToMany(mappedBy="website")
     private Set<Link> links;
+
+    public Website() {
+    }
 }

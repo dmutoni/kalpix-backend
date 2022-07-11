@@ -28,4 +28,7 @@ public class Link {
 
     @Column(name = "total_downloaded_kilobytes")
     private long totalDownloadedKilobytes;
+
+    public Link() {
+    }
 }

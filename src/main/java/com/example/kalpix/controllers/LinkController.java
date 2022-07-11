@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@RestController()
+@RestController
 @RequestMapping("/api/links")
 public class LinkController {
     public final ILinkService linkService;
@@ -15,7 +15,7 @@ public class LinkController {
     public LinkController(ILinkService linkService) {
         this.linkService = linkService;
     }
-    @GetMapping("/")
+    @GetMapping("/all")
     public ApiResponse getLinks() {
         return new ApiResponse(HttpStatus.OK, true, "Links fetched", linkService.getAllLinks());
     }
